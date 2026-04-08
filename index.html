@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Licha — Ayrton Abril</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080c10;--surface:#0d1117;--card:#111820;--border:#1c2530;--border2:#243040;
+  --accent:#00e5ff;--accent2:#ff6b35;--accent3:#a8ff3e;
+  --text:#d8e4f0;--muted:#4a6070;--muted2:#6a8090;--white:#f0f8ff;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(8,12,16,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.nav-btn{flex-shrink:0;padding:14px 20px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;background:none;border-left:none;border-right:none;border-top:none}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.page{display:none}
+.page.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* HERO */
+.hero{padding:48px 28px 36px;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 600px 300px at 80% 50%,rgba(0,229,255,.05) 0%,transparent 70%),radial-gradient(ellipse 400px 400px at 10% 80%,rgba(255,107,53,.04) 0%,transparent 70%);pointer-events:none}
+.hero-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(52px,12vw,90px);font-weight:900;line-height:.9;color:var(--white);text-transform:uppercase;letter-spacing:-1px}
+.hero h1 em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(--accent)}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{background:var(--card);border:1px solid var(--border2);border-radius:100px;padding:5px 14px;font-size:11px;color:var(--muted2)}
+.pill strong{color:var(--text)}
+
+.section{padding:24px 28px;border-bottom:1px solid var(--border)}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+
+/* WEEK STRIP */
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:22px}
+.ws-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s}
+.ws-day:hover,.ws-day.sel{border-color:var(--accent);background:rgba(0,229,255,.06)}
+.ws-day.rest{opacity:.35;cursor:default}
+.ws-day.rest:hover{border-color:var(--border);background:var(--card)}
+.ws-day .wd{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.ws-day .wi{font-size:18px;margin:4px 0}
+.ws-day .wf{font-size:10px;font-weight:600;color:var(--text);line-height:1.2}
+
+/* WORKOUT */
+.workout-block{display:none}
+.workout-block.active{display:block}
+.wb-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;padding:18px;background:var(--card);border:1px solid var(--border2);border-radius:10px}
+.wb-badge{background:var(--accent);color:var(--bg);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:4px;flex-shrink:0;margin-top:3px}
+.wb-badge.orange{background:var(--accent2)}
+.wb-badge.green{background:var(--accent3);color:#080c10}
+.wb-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--white);text-transform:uppercase;letter-spacing:.5px;line-height:1}
+.wb-sub{font-size:12px;color:var(--muted2);margin-top:3px}
+
+.ex-table{width:100%;border-collapse:collapse}
+.ex-table thead th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.ex-table tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s}
+.ex-table tbody tr:hover{background:rgba(0,229,255,.03)}
+.ex-table td{padding:11px 10px;vertical-align:top}
+.ex-num{width:26px;height:26px;border-radius:50%;background:var(--border2);color:var(--muted2);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ex-name{font-weight:600;color:var(--white);font-size:13px}
+.ex-note{font-size:11px;color:var(--muted2);margin-top:2px}
+.ex-tag{display:inline-block;background:rgba(0,229,255,.1);color:var(--accent);border-radius:4px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap}
+.ex-tag.orange{background:rgba(255,107,53,.1);color:var(--accent2)}
+.tip-strip{background:rgba(0,229,255,.05);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;font-size:12px;color:var(--muted2);margin-top:14px}
+.tip-strip strong{color:var(--accent)}
+
+/* ABS BLOCK */
+.abs-block{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:16px 18px;margin-top:14px}
+.abs-block h4{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;color:var(--white);margin-bottom:10px}
+
+/* NUTRITION */
+.macro-bar-wrap{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px}
+@media(min-width:500px){.macro-bar-wrap{grid-template-columns:repeat(4,1fr)}}
+.macro-box{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:16px 14px;text-align:center}
+.macro-val{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--accent);line-height:1}
+.macro-val.orange{color:var(--accent2)}
+.macro-val.green{color:var(--accent3)}
+.macro-val.white{color:var(--white)}
+.macro-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:4px}
+.macro-sub{font-size:11px;color:var(--text);margin-top:5px}
+
+.meals{display:flex;flex-direction:column;gap:12px}
+.meal-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.meal-header{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;transition:background .15s}
+.meal-header:hover{background:rgba(255,255,255,.02)}
+.meal-time-badge{background:var(--border2);border-radius:6px;padding:6px 10px;text-align:center;flex-shrink:0;min-width:58px}
+.meal-time-badge .mt{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--white)}
+.meal-time-badge .ml{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.meal-info{flex:1}
+.meal-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--white)}
+.meal-macro-row{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
+.mm{font-size:11px;color:var(--muted2)}
+.mm span{color:var(--text);font-weight:600}
+.meal-chevron{color:var(--muted);transition:transform .3s;font-size:14px}
+.meal-card.open .meal-chevron{transform:rotate(180deg)}
+.meal-body{display:none;padding:0 18px 18px}
+.meal-card.open .meal-body{display:block}
+
+.meal-option{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px}
+.meal-option:last-child{margin-bottom:0}
+.meal-opt-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.meal-opt-label.b{color:var(--accent2)}
+.meal-opt-label.c{color:var(--accent3)}
+
+.food-list{list-style:none}
+.food-list li{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;gap:8px}
+.food-list li:last-child{border-bottom:none}
+.food-list .food-name{color:var(--text)}
+.food-list .food-amount{color:var(--muted2);font-size:11px;white-space:nowrap}
+.food-list .food-kcal{color:var(--accent);font-size:11px;font-weight:600;white-space:nowrap}
+.opt-macros{display:flex;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+.opt-macro{font-size:11px;color:var(--muted2)}
+.opt-macro strong{color:var(--text)}
+
+.daily-total{background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(255,107,53,.05));border:1px solid var(--border2);border-radius:10px;padding:18px;margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:400px){.daily-total{grid-template-columns:repeat(4,1fr)}}
+.dt-item{text-align:center}
+.dt-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--white)}
+.dt-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.note-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.note-icon{font-size:20px;flex-shrink:0}
+.note-card h4{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px}
+.note-card p{font-size:12px;color:var(--muted2);line-height:1.5}
+
+.supp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.supp-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;gap:10px;align-items:flex-start}
+.supp-icon{font-size:20px;flex-shrink:0}
+.supp-card h4{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px}
+.supp-card p{font-size:11px;color:var(--muted2);line-height:1.5}
+.supp-dose{display:inline-block;background:rgba(168,255,62,.1);color:var(--accent3);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;margin-top:4px}
+
+.highlight-box{background:rgba(168,255,62,.05);border:1px solid rgba(168,255,62,.2);border-radius:8px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:16px;line-height:1.7}
+.highlight-box strong{color:var(--accent3)}
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="nav-btn active" onclick="showPage('training',this)">🏋️ Rutinas</button>
+  <button class="nav-btn" onclick="showPage('nutrition',this)">🍽️ Nutrición</button>
+  <button class="nav-btn" onclick="showPage('indicaciones',this)">📋 Indicaciones</button>
+  <button class="nav-btn" onclick="showPage('recovery',this)">⚡ Recuperación</button>
+  <button class="nav-btn" onclick="showPage('tracker',this)">📊 Tracker</button>
+  <button class="nav-btn" onclick="showPage('coach',this)">⚔️ WARRIORIA</button>
+</nav>
+
+<!-- ═══════════════════════════
+     TRAINING
+═══════════════════════════ -->
+<div id="page-training" class="page active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Plan Entrenamiento Abril</div>
+    <h1>PLAN<br><em>LICHA</em></h1>
+    <div class="hero-pills">
+      <div class="pill">Split <strong>Push / Pull / Legs</strong></div>
+      <div class="pill">Pirámide <strong>15/12/10/8</strong></div>
+      <div class="pill">Abs <strong>incluidos</strong></div>
+      <div class="pill">Fuerza <strong>progresiva</strong></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Seleccioná el entrenamiento</div>
+    <div class="week-strip">
+      <div class="ws-day sel" onclick="selectDay('push',this)">
+        <div class="wd">Push</div>
+        <div class="wi">💪</div>
+        <div class="wf">Pecho / Hombro / Trí</div>
+      </div>
+      <div class="ws-day" onclick="selectDay('pull',this)">
+        <div class="wd">Pull</div>
+        <div class="wi">🔙</div>
+        <div class="wf">Espalda / Bíceps</div>
+      </div>
+      <div class="ws-day" onclick="selectDay('legs',this)">
+        <div class="wd">Legs</div>
+        <div class="wi">🦵</div>
+        <div class="wf">Pierna Completa</div>
+      </div>
+      <div class="ws-day rest">
+        <div class="wd">Rest</div>
+        <div class="wi">😴</div>
+        <div class="wf">Descanso</div>
+      </div>
+    </div>
+
+    <!-- PUSH -->
+    <div id="wb-push" class="workout-block active">
+      <div class="wb-header">
+        <span class="wb-badge">Push</span>
+        <div>
+          <div class="wb-title">Pecho / Hombro / Tríceps</div>
+          <div class="wb-sub">Pirámide de carga en ejercicios principales · ~75 min</div>
+        </div>
+      </div>
+      <table class="ex-table">
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>Nota clave</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="ex-num">1</div></td>
+            <td>
+              <div class="ex-name">Press Inclinado Smith</div>
+              <div class="ex-note">Banco a 30° · sube peso en cada serie · pecho como imán a la barra · no bloquear codos</div>
+            </td>
+            <td><span class="ex-tag">4 × 15/12/10/8</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pirámide</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">2</div></td>
+            <td>
+              <div class="ex-name">Press Plano Smith</div>
+              <div class="ex-note">Sube peso cada serie · bajar hasta rozar el pecho · no rebotar · no bloquear codos arriba</div>
+            </td>
+            <td><span class="ex-tag">4 × 15/12/10/8</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pirámide</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">3</div></td>
+            <td>
+              <div class="ex-name">Aperturas en Polea / Pec Deck</div>
+              <div class="ex-note">Aguanta 1 segundo al cerrar · codos con ligera flexión fija · enfocate en el pecho, no en los brazos</div>
+            </td>
+            <td><span class="ex-tag">3 × 12–15</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pausa 1s</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">4</div></td>
+            <td>
+              <div class="ex-name">Press Hombro con Mancuernas</div>
+              <div class="ex-note">Espalda bien apoyada en banco · no arquear la lumbar · bajar hasta 90° en el codo</div>
+            </td>
+            <td><span class="ex-tag">3 × 12/10/10</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Espalda apoyada</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">5</div></td>
+            <td>
+              <div class="ex-name">Elevaciones Laterales</div>
+              <div class="ex-note">Movimiento hacia AFUERA, no arriba · codo ligeramente doblado · control en la bajada · sin momentum</div>
+            </td>
+            <td><span class="ex-tag">4 × 12–15</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Hacia afuera</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">6</div></td>
+            <td>
+              <div class="ex-name">Tríceps Polea con Cuerda</div>
+              <div class="ex-note">Codos pegados al cuerpo en todo momento · abrir la cuerda al final de la extensión · no balancear torso</div>
+            </td>
+            <td><span class="ex-tag">3 × 10–12</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Codos pegados</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">7</div></td>
+            <td>
+              <div class="ex-name">Extensión en Barra / Fondos</div>
+              <div class="ex-note">Codos cerrados SIEMPRE · si es barra: press francés o jalón cerrado · si es fondos: torso vertical para más tríceps</div>
+            </td>
+            <td><span class="ex-tag">4 × 12</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Codos cerrados</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip-strip"><strong>Pirámide:</strong> Serie 1 = 15 reps con peso moderado. Serie 2 = sube peso, 12 reps. Serie 3 = sube más, 10 reps. Serie 4 = peso máximo, 8 reps con buena técnica. Nunca sacrifiques forma por peso.</div>
+    </div>
+
+    <!-- PULL -->
+    <div id="wb-pull" class="workout-block">
+      <div class="wb-header">
+        <span class="wb-badge orange">Pull</span>
+        <div>
+          <div class="wb-title">Espalda / Bíceps</div>
+          <div class="wb-sub">Tracción vertical y horizontal · bíceps al final · ~70 min</div>
+        </div>
+      </div>
+      <table class="ex-table">
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>Nota clave</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="ex-num">1</div></td>
+            <td>
+              <div class="ex-name">Dorsalera Agarre Abierto</div>
+              <div class="ex-note">Tracciona con los CODOS, no con las manos · retrae escápulas al llegar abajo · excéntrico controlado</div>
+            </td>
+            <td><span class="ex-tag">4 × 15/12/10/8</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pirámide</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">2</div></td>
+            <td>
+              <div class="ex-name">Dorsalera Agarre Cerrado</div>
+              <div class="ex-note">Agarre neutro (palmas enfrentadas) · lleva la barra al pecho bajo · pausa 1s en contracción</div>
+            </td>
+            <td><span class="ex-tag">4 × 10</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pecho bajo</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">3</div></td>
+            <td>
+              <div class="ex-name">Remo en Máquina</div>
+              <div class="ex-note">Juntar las escápulas (paletas) al traer hacia el cuerpo · pausa 1s · no balancear el torso</div>
+            </td>
+            <td><span class="ex-tag">4 × 10</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Juntar escápulas</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">4</div></td>
+            <td>
+              <div class="ex-name">Pullover Barra Recta / Serrucho</div>
+              <div class="ex-note">Pullover: acostado en banco, baja barra detrás de la cabeza con codos fijos · Serrucho: rodilla y mano apoyadas, ROM completo</div>
+            </td>
+            <td><span class="ex-tag">4 × 15</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Dorsal largo</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">5</div></td>
+            <td>
+              <div class="ex-name">Curl con Barra / Máquina</div>
+              <div class="ex-note">SIN balanceos · bajar LENTO (2 segundos excéntrico) · codos fijos · ROM completo</div>
+            </td>
+            <td><span class="ex-tag">3 × 10</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Bajar 2s</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">6</div></td>
+            <td>
+              <div class="ex-name">Curl Alternado con Mancuernas</div>
+              <div class="ex-note">Gira la muñeca al subir (supinación) para máxima contracción del bíceps · alterna brazos</div>
+            </td>
+            <td><span class="ex-tag">3 × 10–12</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Girar muñeca</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">7</div></td>
+            <td>
+              <div class="ex-name">Curl Martillo</div>
+              <div class="ex-note">Palmas enfrentadas en todo el recorrido · trabaja braquial y braquiorradial · clave para grosor del brazo</div>
+            </td>
+            <td><span class="ex-tag">2 × 10</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Grosor brazo</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip-strip"><strong>Clave de espalda:</strong> Pensá en los codos, no en las manos. El movimiento lo generan los codos yendo hacia abajo y atrás — las manos son solo ganchos. Eso es lo que conecta el ejercicio con el dorsal.</div>
+    </div>
+
+    <!-- LEGS -->
+    <div id="wb-legs" class="workout-block">
+      <div class="wb-header">
+        <span class="wb-badge green">Legs</span>
+        <div>
+          <div class="wb-title">Pierna Completa + Abdominales</div>
+          <div class="wb-sub">Pre-fatiga de cuád · empuje · femoral · gemelos · abs · ~85 min</div>
+        </div>
+      </div>
+      <table class="ex-table">
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>Nota clave</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="ex-num">1</div></td>
+            <td>
+              <div class="ex-name">Extensiones de Cuádriceps</div>
+              <div class="ex-note">PRE-FATIGA · arrancás con esto para bombear el cuádriceps antes de los compuestos · peso moderado, enfocate en la contracción</div>
+            </td>
+            <td><span class="ex-tag">4 × 15</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pre-fatiga</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">2</div></td>
+            <td>
+              <div class="ex-name">Prensa de Piernas</div>
+              <div class="ex-note">NO bloquear las rodillas arriba · bajar hasta 90° mínimo · pies a altura de hombros · sube peso cada serie</div>
+            </td>
+            <td><span class="ex-tag">4 × 15/12/10/8</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Pirámide</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">3</div></td>
+            <td>
+              <div class="ex-name">Sentadilla Hack</div>
+              <div class="ex-note">Máxima profundidad CONTROLADA · rodillas no colapsan hacia adentro · espalda apoyada en toda la máquina</div>
+            </td>
+            <td><span class="ex-tag">4 × 12</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Máx profundidad</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">4</div></td>
+            <td>
+              <div class="ex-name">Curl Femoral Acostado</div>
+              <div class="ex-note">Acostado boca abajo · NO despegar la cadera del banco · excéntrico lento 2-3 seg · pausa 1s en contracción</div>
+            </td>
+            <td><span class="ex-tag">4 × 12</span></td>
+            <td style="font-size:12px;color:var(--muted2)">No despegar cadera</td>
+          </tr>
+          <tr>
+            <td><div class="ex-num">5</div></td>
+            <td>
+              <div class="ex-name">Gemelos en Prensa (opcional)</div>
+              <div class="ex-note">Rango completo de movimiento: baja hasta el máximo stretch, sube hasta la máxima contracción · pausa 1s arriba</div>
+            </td>
+            <td><span class="ex-tag orange">4 × 15–20</span></td>
+            <td style="font-size:12px;color:var(--muted2)">Opcional</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ABS -->
+      <div class="abs-block">
+        <h4>💪 Trabajo de Abdominales</h4>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>Nota clave</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="ex-num">A</div></td>
+              <td>
+                <div class="ex-name">Crunch Estable (puede ser en banco)</div>
+                <div class="ex-note">Movimiento desde el abdomen, no desde el cuello · exhala al subir · control total, sin impulso</div>
+              </td>
+              <td><span class="ex-tag">4 × 12–15</span></td>
+              <td style="font-size:12px;color:var(--muted2)">Estable</td>
+            </tr>
+            <tr>
+              <td><div class="ex-num">B</div></td>
+              <td>
+                <div class="ex-name">Elevación de Piernas</div>
+                <div class="ex-note">Bien controlado · no balancear · bajar lento sin tocar el suelo · activa el abdomen bajo</div>
+              </td>
+              <td><span class="ex-tag">3 × 12</span></td>
+              <td style="font-size:12px;color:var(--muted2)">Controlado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tip-strip"><strong>Estrategia del día:</strong> La pre-fatiga con extensiones "prende" el cuádriceps antes de la prensa y la hack squat. Aunque lleguás con algo de fatiga al peso grande, la conexión mente-músculo es mucho mayor. Es un día largo — llegá descansado y con carbos.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     NUTRITION
+═══════════════════════════ -->
+<div id="page-nutrition" class="page">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Plan Nutricional — Licha Abril</div>
+    <h1>4<br><em>COMIDAS</em></h1>
+    <div class="hero-pills">
+      <div class="pill">~<strong>2350 kcal</strong> / día</div>
+      <div class="pill">Proteína <strong>~160g</strong></div>
+      <div class="pill">Carbos <strong>~220g</strong></div>
+      <div class="pill">Grasas <strong>~80g</strong></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Distribución de macros estimada</div>
+    <div class="macro-bar-wrap">
+      <div class="macro-box">
+        <div class="macro-val white">2350</div>
+        <div class="macro-lbl">kcal diarias</div>
+        <div class="macro-sub">Calculado por Licha</div>
+      </div>
+      <div class="macro-box">
+        <div class="macro-val">~160g</div>
+        <div class="macro-lbl">Proteína</div>
+        <div class="macro-sub">640 kcal · 27%</div>
+      </div>
+      <div class="macro-box">
+        <div class="macro-val orange">~220g</div>
+        <div class="macro-lbl">Carbohidratos</div>
+        <div class="macro-sub">880 kcal · 37%</div>
+      </div>
+      <div class="macro-box">
+        <div class="macro-val green">~80g</div>
+        <div class="macro-lbl">Grasas</div>
+        <div class="macro-sub">720 kcal · 31%</div>
+      </div>
+    </div>
+
+    <div class="meals">
+
+      <!-- DESAYUNO -->
+      <div class="meal-card open">
+        <div class="meal-header" onclick="toggleMeal(this)">
+          <div class="meal-time-badge"><div class="mt">7:30</div><div class="ml">Desayuno</div></div>
+          <div class="meal-info">
+            <div class="meal-name">Desayuno — Elegí una opción</div>
+            <div class="meal-macro-row">
+              <div class="mm">Suplementos: <span>Multi · Vit D3 · Omega 3 · Creatina</span></div>
+            </div>
+          </div>
+          <div class="meal-chevron">▾</div>
+        </div>
+        <div class="meal-body">
+          <div class="tip-strip" style="margin-bottom:14px"><strong>Suplementos con el desayuno:</strong> Multivitamínico · Vitamina D3 · Omega 3 · Creatina 5g</div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label">OPCIÓN 1</div>
+            <ul class="food-list">
+              <li><span class="food-name">Yogur Ser Protein</span><span class="food-amount">1 pot</span><span class="food-kcal">~160 kcal</span></li>
+              <li><span class="food-name">1 fruta (cualquiera)</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+              <li><span class="food-name">2 tostadas</span><span class="food-amount">~60g</span><span class="food-kcal">~160 kcal</span></li>
+              <li><span class="food-name">Pasta maní <em style="color:var(--muted2);font-size:11px">ó</em> frutos secos</span><span class="food-amount">25g</span><span class="food-kcal">~150 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~28g</strong></div>
+              <div class="opt-macro">Carbos <strong>~62g</strong></div>
+              <div class="opt-macro">Grasas <strong>~18g</strong></div>
+              <div class="opt-macro">Total <strong>~550 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label b">OPCIÓN 2</div>
+            <ul class="food-list">
+              <li><span class="food-name">2 tostadas</span><span class="food-amount">~60g</span><span class="food-kcal">~160 kcal</span></li>
+              <li><span class="food-name">3 huevos</span><span class="food-amount">3 unidades</span><span class="food-kcal">~210 kcal</span></li>
+              <li><span class="food-name">Rebanada queso por salut</span><span class="food-amount">30g</span><span class="food-kcal">~90 kcal</span></li>
+              <li><span class="food-name">Fruta</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~32g</strong></div>
+              <div class="opt-macro">Carbos <strong>~52g</strong></div>
+              <div class="opt-macro">Grasas <strong>~18g</strong></div>
+              <div class="opt-macro">Total <strong>~540 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label c">OPCIÓN 3</div>
+            <ul class="food-list">
+              <li><span class="food-name">Scoop proteína</span><span class="food-amount">30g</span><span class="food-kcal">~120 kcal</span></li>
+              <li><span class="food-name">Yogur Ser Protein</span><span class="food-amount">1 pot</span><span class="food-kcal">~160 kcal</span></li>
+              <li><span class="food-name">Fruta</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+              <li><span class="food-name">Pasta maní</span><span class="food-amount">20g</span><span class="food-kcal">~120 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~42g</strong></div>
+              <div class="opt-macro">Carbos <strong>~44g</strong></div>
+              <div class="opt-macro">Grasas <strong>~14g</strong></div>
+              <div class="opt-macro">Total <strong>~480 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label" style="color:var(--muted2)">OPCIÓN 4</div>
+            <ul class="food-list">
+              <li><span class="food-name">Ser Protein</span><span class="food-amount">1 pot</span><span class="food-kcal">~160 kcal</span></li>
+              <li><span class="food-name">½ ó 1 Scoop proteína</span><span class="food-amount">15–30g</span><span class="food-kcal">~60–120 kcal</span></li>
+              <li><span class="food-name">Pasta maní <em style="color:var(--muted2);font-size:11px">ó</em> frutos secos</span><span class="food-amount">20g</span><span class="food-kcal">~120 kcal</span></li>
+              <li><span class="food-name">Fruta</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+              <li><span class="food-name">Quinoa pop ó galleta arroz rota (opcional)</span><span class="food-amount">al gusto</span><span class="food-kcal">~15 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~38g</strong></div>
+              <div class="opt-macro">Carbos <strong>~46g</strong></div>
+              <div class="opt-macro">Grasas <strong>~16g</strong></div>
+              <div class="opt-macro">Total <strong>~455 kcal</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ALMUERZO -->
+      <div class="meal-card">
+        <div class="meal-header" onclick="toggleMeal(this)">
+          <div class="meal-time-badge"><div class="mt">12:30</div><div class="ml">Almuerzo</div></div>
+          <div class="meal-info">
+            <div class="meal-name">Almuerzo — Elegí una opción</div>
+            <div class="meal-macro-row">
+              <div class="mm">Hidrato: <span>arroz ó papa ó batata ó fideos ó galletas</span></div>
+            </div>
+          </div>
+          <div class="meal-chevron">▾</div>
+        </div>
+        <div class="meal-body">
+          <div class="tip-strip" style="margin-bottom:14px"><strong>Hidrato es uno solo:</strong> 200g arroz/papa/batata (crudo) ó 80g fideos (crudo) ó 6 galletas de arroz. No se combinan.</div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label">OPCIÓN 1 — Proteína + Hidrato + Verdura</div>
+            <ul class="food-list">
+              <li><span class="food-name">Carne magra <em style="color:var(--muted2);font-size:11px">ó</em> pollo <em style="color:var(--muted2);font-size:11px">ó</em> lata atún natural</span><span class="food-amount">250g crudo</span><span class="food-kcal">~310 kcal</span></li>
+              <li><span class="food-name">Arroz <em style="color:var(--muted2);font-size:11px">ó</em> papa <em style="color:var(--muted2);font-size:11px">ó</em> batata <em style="color:var(--muted2);font-size:11px">ó</em> 80g fideos <em style="color:var(--muted2);font-size:11px">ó</em> 6 galletas arroz</span><span class="food-amount">200g crudo</span><span class="food-kcal">~260 kcal</span></li>
+              <li><span class="food-name">Calabaza + verdura libre</span><span class="food-amount">libre</span><span class="food-kcal">~30 kcal</span></li>
+              <li><span class="food-name">1 cda aceite oliva <em style="color:var(--muted2);font-size:11px">ó</em> ½ palta</span><span class="food-amount">10ml ó 70g</span><span class="food-kcal">~90 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~52g</strong></div>
+              <div class="opt-macro">Carbos <strong>~76g</strong></div>
+              <div class="opt-macro">Grasas <strong>~14g</strong></div>
+              <div class="opt-macro">Total <strong>~690 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label b">OPCIÓN 2 — Omelette + Hidrato</div>
+            <ul class="food-list">
+              <li><span class="food-name">2 huevos enteros</span><span class="food-amount">2 unidades</span><span class="food-kcal">~140 kcal</span></li>
+              <li><span class="food-name">Queso por salut</span><span class="food-amount">30g</span><span class="food-kcal">~90 kcal</span></li>
+              <li><span class="food-name">6 galletas arroz <em style="color:var(--muted2);font-size:11px">ó</em> 200g arroz <em style="color:var(--muted2);font-size:11px">ó</em> papa <em style="color:var(--muted2);font-size:11px">ó</em> batata</span><span class="food-amount">elegir uno</span><span class="food-kcal">~200 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~28g</strong></div>
+              <div class="opt-macro">Carbos <strong>~56g</strong></div>
+              <div class="opt-macro">Grasas <strong>~18g</strong></div>
+              <div class="opt-macro">Total <strong>~430 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label c">OPCIÓN 3 — Atún + Papa + Huevo</div>
+            <ul class="food-list">
+              <li><span class="food-name">1 lata atún al natural</span><span class="food-amount">160g escurrido</span><span class="food-kcal">~176 kcal</span></li>
+              <li><span class="food-name">Papa <em style="color:var(--muted2);font-size:11px">(esta opción incluye papa)</em></span><span class="food-amount">200g</span><span class="food-kcal">~172 kcal</span></li>
+              <li><span class="food-name">1 huevo <em style="color:var(--muted2);font-size:11px">ó</em> 1 cda aceite oliva</span><span class="food-amount">—</span><span class="food-kcal">~70–90 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~44g</strong></div>
+              <div class="opt-macro">Carbos <strong>~60g</strong></div>
+              <div class="opt-macro">Grasas <strong>~8g</strong></div>
+              <div class="opt-macro">Total <strong>~418 kcal</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MERIENDA -->
+      <div class="meal-card">
+        <div class="meal-header" onclick="toggleMeal(this)">
+          <div class="meal-time-badge"><div class="mt">17:00</div><div class="ml">Merienda</div></div>
+          <div class="meal-info">
+            <div class="meal-name">Merienda — Elegí una opción</div>
+            <div class="meal-macro-row">
+              <div class="mm">Lunes: <span>sin fruta</span></div>
+            </div>
+          </div>
+          <div class="meal-chevron">▾</div>
+        </div>
+        <div class="meal-body">
+          <div class="tip-strip" style="margin-bottom:14px"><strong>Lunes:</strong> Sacar la fruta de la merienda para bajar carbohidratos ese día.</div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label">OPCIÓN 1</div>
+            <ul class="food-list">
+              <li><span class="food-name">Scoop proteína</span><span class="food-amount">30g</span><span class="food-kcal">~120 kcal</span></li>
+              <li><span class="food-name">Fruta</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+              <li><span class="food-name">Frutos secos (nuez o almendra)</span><span class="food-amount">20g</span><span class="food-kcal">~120 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~28g</strong></div>
+              <div class="opt-macro">Carbos <strong>~30g</strong></div>
+              <div class="opt-macro">Grasas <strong>~12g</strong></div>
+              <div class="opt-macro">Total <strong>~320 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label b">OPCIÓN 2 — Barrita proteína + fruta</div>
+            <ul class="food-list">
+              <li><span class="food-name">Barrita proteína Integra (o similar, mandá foto)</span><span class="food-amount">~60g</span><span class="food-kcal">~220 kcal</span></li>
+              <li><span class="food-name">Fruta</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~20g</strong></div>
+              <div class="opt-macro">Carbos <strong>~40g</strong></div>
+              <div class="opt-macro">Grasas <strong>~8g</strong></div>
+              <div class="opt-macro">Total <strong>~300 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label c">OPCIÓN 3 — Ser Protein + Scoop + Pasta Maní</div>
+            <ul class="food-list">
+              <li><span class="food-name">Yogur Ser Protein</span><span class="food-amount">1 pot</span><span class="food-kcal">~160 kcal</span></li>
+              <li><span class="food-name">½ ó 1 Scoop proteína</span><span class="food-amount">15–30g</span><span class="food-kcal">~60–120 kcal</span></li>
+              <li><span class="food-name">Pasta de maní <em style="color:var(--muted2);font-size:11px">ó</em> frutos secos</span><span class="food-amount">20g</span><span class="food-kcal">~120 kcal</span></li>
+              <li><span class="food-name">Fruta</span><span class="food-amount">1 unidad</span><span class="food-kcal">~80 kcal</span></li>
+              <li><span class="food-name">Quinoa pop ó galleta arroz rota (opcional crunch)</span><span class="food-amount">al gusto</span><span class="food-kcal">~15 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~36g</strong></div>
+              <div class="opt-macro">Carbos <strong>~40g</strong></div>
+              <div class="opt-macro">Grasas <strong>~16g</strong></div>
+              <div class="opt-macro">Total <strong>~435 kcal</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CENA -->
+      <div class="meal-card">
+        <div class="meal-header" onclick="toggleMeal(this)">
+          <div class="meal-time-badge"><div class="mt">21:00</div><div class="ml">Cena</div></div>
+          <div class="meal-info">
+            <div class="meal-name">Cena — Elegí una opción</div>
+            <div class="meal-macro-row">
+              <div class="mm">Lunes: <span>sin papa</span></div>
+            </div>
+          </div>
+          <div class="meal-chevron">▾</div>
+        </div>
+        <div class="meal-body">
+          <div class="tip-strip" style="margin-bottom:14px"><strong>Lunes:</strong> Sacar la papa/batata de la cena ese día para bajar los carbos.</div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label">OPCIÓN 1 — Carne/Pollo/Atún + Papa + Verdura</div>
+            <ul class="food-list">
+              <li><span class="food-name">Carne magra <em style="color:var(--muted2);font-size:11px">ó</em> pollo <em style="color:var(--muted2);font-size:11px">ó</em> lata atún natural</span><span class="food-amount">200g</span><span class="food-kcal">~280 kcal</span></li>
+              <li><span class="food-name">Papa <em style="color:var(--muted2);font-size:11px">ó</em> batata mediana</span><span class="food-amount">200g</span><span class="food-kcal">~172 kcal</span></li>
+              <li><span class="food-name">Rodajas calabaza + verdura/ensalada libre</span><span class="food-amount">libre</span><span class="food-kcal">~25 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~44g</strong></div>
+              <div class="opt-macro">Carbos <strong>~55g</strong></div>
+              <div class="opt-macro">Grasas <strong>~8g</strong></div>
+              <div class="opt-macro">Total <strong>~477 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label b">OPCIÓN 2 — Omelette 3 Huevos + Pan (5 min)</div>
+            <ul class="food-list">
+              <li><span class="food-name">3 huevos enteros</span><span class="food-amount">3 unidades</span><span class="food-kcal">~210 kcal</span></li>
+              <li><span class="food-name">Queso por salut light</span><span class="food-amount">30g</span><span class="food-kcal">~72 kcal</span></li>
+              <li><span class="food-name">2 rebanadas pan</span><span class="food-amount">60g</span><span class="food-kcal">~159 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~30g</strong></div>
+              <div class="opt-macro">Carbos <strong>~42g</strong></div>
+              <div class="opt-macro">Grasas <strong>~20g</strong></div>
+              <div class="opt-macro">Total <strong>~441 kcal</strong></div>
+            </div>
+          </div>
+
+          <div class="meal-option">
+            <div class="meal-opt-label c">OPCIÓN 3 — Atún + Huevo + Pan (5 min)</div>
+            <ul class="food-list">
+              <li><span class="food-name">Lata atún al natural</span><span class="food-amount">160g escurrido</span><span class="food-kcal">~176 kcal</span></li>
+              <li><span class="food-name">1 huevo</span><span class="food-amount">1 unidad</span><span class="food-kcal">~70 kcal</span></li>
+              <li><span class="food-name">2 rebanadas pan</span><span class="food-amount">60g</span><span class="food-kcal">~159 kcal</span></li>
+            </ul>
+            <div class="opt-macros">
+              <div class="opt-macro">Proteína <strong>~42g</strong></div>
+              <div class="opt-macro">Carbos <strong>~44g</strong></div>
+              <div class="opt-macro">Grasas <strong>~8g</strong></div>
+              <div class="opt-macro">Total <strong>~405 kcal</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /meals -->
+
+    <div class="daily-total">
+      <div class="dt-item"><div class="dt-val">~2350</div><div class="dt-lbl">kcal diarias</div></div>
+      <div class="dt-item"><div class="dt-val">~160g</div><div class="dt-lbl">Proteína</div></div>
+      <div class="dt-item"><div class="dt-val">~220g</div><div class="dt-lbl">Carbohidratos</div></div>
+      <div class="dt-item"><div class="dt-val">~80g</div><div class="dt-lbl">Grasas</div></div>
+    </div>
+    <div class="tip-strip" style="margin-top:12px"><strong>Distribución:</strong> Desayuno ~580 kcal · Almuerzo ~700 kcal · Merienda ~420 kcal · Cena ~530 kcal · Carbos: ~220g (lunes ~180g al sacar fruta y papa).</div>
+  </div>
+
+  <!-- SUPLEMENTOS -->
+  <div class="section">
+    <div class="section-title">Suplementos indicados</div>
+    <div class="supp-grid">
+      <div class="supp-card">
+        <div class="supp-icon">💊</div>
+        <div><h4>Multivitamínico</h4><p>Con el desayuno. Cubre micronutrientes base para rendimiento y recuperación muscular.</p><div class="supp-dose">Con desayuno · diario</div></div>
+      </div>
+      <div class="supp-card">
+        <div class="supp-icon">☀️</div>
+        <div><h4>Vitamina D3</h4><p>Fundamental para testosterona, sistema inmune y absorción de calcio. La mayoría tiene deficiencia sin saberlo.</p><div class="supp-dose">Con desayuno · diario</div></div>
+      </div>
+      <div class="supp-card">
+        <div class="supp-icon">🐟</div>
+        <div><h4>Omega 3</h4><p>Antiinflamatorio, mejora recuperación muscular y salud cardiovascular. Con comida grasa para mejor absorción.</p><div class="supp-dose">Con desayuno · diario</div></div>
+      </div>
+      <div class="supp-card">
+        <div class="supp-icon">💪</div>
+        <div><h4>Creatina Monohidrato</h4><p>El suplemento con más evidencia científica para fuerza e hipertrofia. 5g diarios, cualquier horario, todos los días.</p><div class="supp-dose">5g · diario · con desayuno</div></div>
+      </div>
+      <div class="supp-card">
+        <div class="supp-icon">🥛</div>
+        <div><h4>Proteína Whey</h4><p>Facilita llegar a la meta proteica diaria. En el desayuno y/o post-entreno. No es mágica — es comodidad.</p><div class="supp-dose">1–2 scoops según el día</div></div>
+      </div>
+      <div class="supp-card">
+        <div class="supp-icon">🍫</div>
+        <div><h4>Barrita Proteína (post-entreno)</h4><p>Salvavidas inmediato si no podés comer proteína real. Barrita Integra o similar — mandá foto para validar.</p><div class="supp-dose">Post-entreno cuando sea necesario</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════
+     PAGE: INDICACIONES
+═══════════════════════════════ -->
+<div id="page-indicaciones" class="page">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Reglas del plan</div>
+    <h1>INDICA<br><em>CIONES</em></h1>
+    <div class="hero-pills">
+      <div class="pill">Agua <strong>2–2.5L</strong></div>
+      <div class="pill">Libre <strong>Sábado</strong></div>
+      <div class="pill">Pastas <strong>Domingo</strong></div>
+      <div class="pill">Bajar carbos <strong>Lunes</strong></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Nutrición — reglas base</div>
+    <div class="highlight-box">
+      <strong>MÚSCULO = PROTEÍNA + CARBO + FUERZA</strong><br>
+      Sin proteína no hay material de construcción. Sin carbos no hay energía para entrenar duro. Sin fuerza progresiva no hay estímulo para crecer. Los tres son obligatorios — no se negocia ninguno.
+    </div>
+    <div class="notes-grid">
+      <div class="note-card"><div class="note-icon">🍳</div><div><h4>Desayuno = la comida más importante</h4><p>Es la comida con más hidratos del día. Idealmente entrenás después de este carbo — es el combustible del gym. No saltearla nunca.</p></div></div>
+      <div class="note-card"><div class="note-icon">⚡</div><div><h4>Pre-entreno: carbos antes</h4><p>Si entrenás a la mañana, el desayuno es tu pre-entreno. Si entrenás a la tarde, el almuerzo funciona igual. Siempre con hidratos antes.</p></div></div>
+      <div class="note-card"><div class="note-icon">🏃</div><div><h4>Post-entreno urgente</h4><p>Ideal: 1 scoop proteína + banana dentro de los 60 min. Si no podés: barrita Integra salvavidas. Después el almuerzo cuando puedas.</p></div></div>
+      <div class="note-card"><div class="note-icon">🍚</div><div><h4>Un hidrato por comida</h4><p>Arroz ó papa ó batata ó fideos ó galletas. Elegís UNO — no se combinan. Cantidades en peso crudo salvo que diga cocido.</p></div></div>
+      <div class="note-card"><div class="note-icon">🥩</div><div><h4>Proteína en cada comida</h4><p>Carne magra, pollo, atún, huevos, yogur, queso, whey — siempre hay una fuente proteica. Eso sostiene el músculo todo el día.</p></div></div>
+      <div class="note-card"><div class="note-icon">🥑</div><div><h4>Grasa buena: aceite o palta</h4><p>1 cda aceite oliva ó ½ palta por comida. Necesarias para hormonas — pero no excederse, aportan muchas kcals.</p></div></div>
+      <div class="note-card"><div class="note-icon">📉</div><div><h4>Lunes: bajar carbos</h4><p>En merienda sacás la fruta. En cena sacás papa o batata. Bajan ~170 kcal ese día — intencional para variar el estímulo metabólico.</p></div></div>
+      <div class="note-card"><div class="note-icon">🍕</div><div><h4>Sábado: comida libre</h4><p>Una comida dentro de todo libre. Un gustito con criterio — no es excusa para barrer con todo el día.</p></div></div>
+      <div class="note-card"><div class="note-icon">🍝</div><div><h4>Domingo: pastas con proteína</h4><p>Metés pastas. Antes y después sumás proteína magra en cualquier forma — scoop, huevos, pollo, lo que sea.</p></div></div>
+      <div class="note-card"><div class="note-icon">🍦</div><div><h4>Si hay mucho antojo</h4><p>Helado proteico / Yogur Ser + scoop + quinoa pop / gelatina / frutos rojos / 2 sobres edulcorante. Para no cagarla con algo peor.</p></div></div>
+      <div class="note-card"><div class="note-icon">💧</div><div><h4>Agua: 2–2.5 litros mínimo</h4><p>Un vaso con cada comida. Botella de 1L al gym obligatoria. El músculo es 75% agua — sin hidratación no rinde ni recupera.</p></div></div>
+      <div class="note-card"><div class="note-icon">🥤</div><div><h4>Bebidas y condimentos libres</h4><p>Jugo Clight · Coca Zero (sin pasarse). Mostaza · ketchup · vinagre · limón · especias — suman sabor sin sumar kcals.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Entrenamiento — claves técnicas</div>
+    <div class="notes-grid">
+      <div class="note-card"><div class="note-icon">📈</div><div><h4>Cómo funciona la pirámide</h4><p>S1: peso moderado 15 reps → S2: subís peso 12 reps → S3: subís más 10 reps → S4: peso máximo con buena técnica 8 reps. Nunca forma por peso.</p></div></div>
+      <div class="note-card"><div class="note-icon">🎯</div><div><h4>Conexión mente-músculo</h4><p>No se trata de mover peso de A a B. Cada rep tenés que SENTIR el músculo que trabajás. Si no lo sentís, bajá el peso y corregí primero.</p></div></div>
+      <div class="note-card"><div class="note-icon">🐢</div><div><h4>Excéntrico lento = más músculo</h4><p>La bajada es donde se rompen más fibras. Bajá siempre en 2–3 segundos controlados. No dejes caer el peso — esa es la mitad del trabajo.</p></div></div>
+      <div class="note-card"><div class="note-icon">⏱️</div><div><h4>Descanso entre series</h4><p>Compuestos con pirámide (press, prensa, dorsalera): 2–3 min. Aislamientos (elevaciones, curls): 60–90 seg.</p></div></div>
+      <div class="note-card"><div class="note-icon">🔁</div><div><h4>Frecuencia del split PPL</h4><p>Push → Pull → Legs → descanso → repetís. Cada músculo trabaja con 48–72h de recuperación entre sesiones — lo óptimo para crecer.</p></div></div>
+      <div class="note-card"><div class="note-icon">🔥</div><div><h4>Pre-fatiga en piernas</h4><p>Las extensiones van primero intencionalmente — "prenden" el cuád antes de los compuestos. La conexión mente-músculo en prensa y hack es mucho mayor.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section" style="border-bottom:none;padding-bottom:48px">
+    <div class="section-title">Lo que está libre sin límite</div>
+    <div class="notes-grid">
+      <div class="note-card"><div class="note-icon">🧂</div><div><h4>Condimentos</h4><p>Mostaza · ketchup · vinagre · limón · especias · sal · pimienta — sabor sin kcals.</p></div></div>
+      <div class="note-card"><div class="note-icon">🥗</div><div><h4>Verduras libres</h4><p>Lechuga · tomate · pepino · calabaza · brócoli · espinaca — sin límite. Fibra y micronutrientes sin afectar macros.</p></div></div>
+      <div class="note-card"><div class="note-icon">🫙</div><div><h4>Gelatina sin azúcar</h4><p>Snack para el antojo dulce. Sin kcals relevantes. Con frutos rojos es perfecto.</p></div></div>
+      <div class="note-card"><div class="note-icon">🍓</div><div><h4>Frutos rojos</h4><p>Frutillas · arándanos · frambuesas — bajos en kcals, ricos en antioxidantes. Ideales para el antojo dulce.</p></div></div>
+      <div class="note-card"><div class="note-icon">🫧</div><div><h4>Bebidas zero</h4><p>Clight · Coca Zero · agua con gas — libres sin pasarse. Sin calorías líquidas innecesarias.</p></div></div>
+      <div class="note-card"><div class="note-icon">🍬</div><div><h4>Edulcorantes</h4><p>2 sobres cuando hay antojo. Para el café, el yogur, lo que sea — no afectan los macros.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE: RECUPERACIÓN
+═══════════════════════════════ -->
+<div id="page-recovery" class="page">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Fuera del gym también cuenta</div>
+    <h1>RECUPE<br><em>RACIÓN</em></h1>
+    <div class="hero-pills">
+      <div class="pill">Sueño <strong>7–9h</strong></div>
+      <div class="pill">Deload <strong>cada 6–8 sem</strong></div>
+      <div class="pill">Agua <strong>3L/día</strong></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Pilares de recuperación</div>
+    <div class="notes-grid">
+      <div class="note-card">
+        <div class="note-icon">😴</div>
+        <div><h4>7–9 horas de sueño</h4><p>El músculo NO crece en el gym — crece mientras dormís. La GH (hormona de crecimiento) se secreta en picos durante el sueño profundo. Privarte de sueño sube el cortisol y destruye masa muscular activamente.</p>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,229,255,.05);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600">Objetivo: 7.5–9h · hora fija de dormir y despertar todos los días</div></div>
+      </div>
+      <div class="note-card">
+        <div class="note-icon">🧠</div>
+        <div><h4>Gestión del estrés y cortisol</h4><p>El cortisol crónico elevado es catabólico — destruye músculo y bloquea la testosterona. El estrés del laburo, la facultad, el día a día afecta tu composición corporal aunque no lo notés en el momento.</p>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,229,255,.05);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600">Caminatas · respiración · desconectarte · lo que te funcione</div></div>
+      </div>
+      <div class="note-card">
+        <div class="note-icon">📅</div>
+        <div><h4>Deload cada 6–8 semanas</h4><p>Una semana al 60% del volumen e intensidad. El cuerpo necesita "supercompensar" — después del deload volvés más fuerte que antes. Ignorarlo lleva directo al estancamiento y sobreentrenamiento.</p>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,229,255,.05);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600">1 semana liviana cada 6–8 · mismos ejercicios · mitad de series</div></div>
+      </div>
+      <div class="note-card">
+        <div class="note-icon">🔥</div>
+        <div><h4>Calentamiento siempre</h4><p>5–10 min de cardio ligero + 2 series de activación al 50–60% antes de cada ejercicio principal. No es opcional — mejora el rendimiento y reduce riesgo de lesión.</p>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,229,255,.05);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600">2 series de activación antes de cada compuesto pesado</div></div>
+      </div>
+      <div class="note-card">
+        <div class="note-icon">🧊</div>
+        <div><h4>Post-entreno activo</h4><p>10 minutos de foam rolling o estiramiento suave en los músculos trabajados. Aumenta el flujo sanguíneo, acelera la eliminación de desechos metabólicos y reduce el DOMS (dolor de los días siguientes).</p>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,229,255,.05);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600">10 min foam roll o stretching post-entreno</div></div>
+      </div>
+      <div class="note-card">
+        <div class="note-icon">💧</div>
+        <div><h4>Hidratación constante</h4><p>El músculo es 75% agua. Deshidratarse un 2% reduce la fuerza 5–15% y frena la recuperación. El agua transporta nutrientes y aminoácidos a las células musculares — sin agua no hay crecimiento.</p>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,229,255,.05);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600">3L diarios · botella de 1L en el gym obligatoria</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="border-bottom:none;padding-bottom:48px">
+    <div class="section-title">Progresión — cómo seguir creciendo</div>
+    <div class="highlight-box">
+      <strong>Sin progresión no hay crecimiento.</strong> Si llevás semanas con los mismos pesos, estás en modo mantenimiento. El objetivo siempre es superar la semana anterior — aunque sea una sola rep más o 2.5kg más.
+    </div>
+    <div class="notes-grid">
+      <div class="note-card"><div class="note-icon">📓</div><div><h4>Registrá todo, siempre</h4><p>Ejercicio, peso, series y reps de cada sesión. Sin registro entrenás a ciegas — no podés saber si progresás. Usá el Tracker de la última pestaña.</p></div></div>
+      <div class="note-card"><div class="note-icon">⬆️</div><div><h4>Cómo avanzar en la pirámide</h4><p>Cuando llegás a 8 reps en la última serie con buena técnica y sobra energía → la próxima sesión subís el peso de esa serie. Si no llegás → mantenés esa semana.</p></div></div>
+      <div class="note-card"><div class="note-icon">🚧</div><div><h4>Si te estancás, revisá estos 4</h4><p><strong>1)</strong> ¿Dormís 7.5h+? <strong>2)</strong> ¿Llegás a las proteínas? <strong>3)</strong> ¿Estás en ~2350 kcal? <strong>4)</strong> ¿Necesitás deload? El problema casi nunca es el programa.</p></div></div>
+      <div class="note-card"><div class="note-icon">📊</div><div><h4>Métricas a trackear</h4><p>Peso corporal en ayunas cada semana. Fotos frontal + lateral cada 4 semanas a la misma hora. Peso + fotos + rendimiento en el gym = la combinación correcta.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE: TRACKER
+═══════════════════════════════ -->
+<div id="page-tracker" class="page">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Seguimiento semanal de pesos</div>
+    <h1>MI<br><em>TRACKER</em></h1>
+    <div class="hero-pills">
+      <div class="pill">Registrá <strong>cada sesión</strong></div>
+      <div class="pill">Compará con <strong>la semana anterior</strong></div>
+      <div class="pill">Historial <strong>guardado</strong></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Nueva sesión</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+      <select id="tr-day" style="flex:1;min-width:140px;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:10px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+        <option value="push">💪 Push — Pecho/Hombro/Trí</option>
+        <option value="pull">🔙 Pull — Espalda/Bíceps</option>
+        <option value="legs">🦵 Legs — Pierna Completa</option>
+      </select>
+      <input id="tr-date" type="date" style="flex:1;min-width:120px;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:10px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;color-scheme:dark">
+      <button onclick="loadForm()" style="background:var(--accent);color:var(--bg);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:1px;cursor:pointer;flex-shrink:0">CARGAR →</button>
+    </div>
+    <div id="tr-form"></div>
+    <button id="tr-save" onclick="saveSession()" style="display:none;width:100%;margin-top:14px;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;cursor:pointer;transition:opacity .2s">💾 GUARDAR SESIÓN</button>
+    <div id="tr-msg" style="display:none;text-align:center;margin-top:10px;color:var(--accent3);font-size:13px;font-weight:600;padding:10px;background:rgba(168,255,62,.06);border-radius:8px">✅ Sesión guardada</div>
+  </div>
+
+  <div class="section" style="border-bottom:none;padding-bottom:48px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div class="section-title" style="margin-bottom:0">Historial</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="filterHistory('all')" id="f-all" style="background:var(--accent);color:var(--bg);border:none;padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer">TODOS</button>
+        <button onclick="filterHistory('push')" id="f-push" style="background:var(--border2);color:var(--text);border:none;padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer">PUSH</button>
+        <button onclick="filterHistory('pull')" id="f-pull" style="background:var(--border2);color:var(--text);border:none;padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer">PULL</button>
+        <button onclick="filterHistory('legs')" id="f-legs" style="background:var(--border2);color:var(--text);border:none;padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer">LEGS</button>
+      </div>
+    </div>
+    <div id="tr-empty" style="color:var(--muted2);font-size:13px;padding:24px 0;text-align:center">
+      <div style="font-size:28px;margin-bottom:8px">📋</div>
+      Todavía no hay sesiones. Cargá tu primera sesión arriba.
+    </div>
+    <div id="tr-history" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<script>
+const EX = {
+  push:['Press Inclinado Smith','Press Plano Smith','Aperturas Polea / Pec Deck','Press Hombro Mancuernas','Elevaciones Laterales','Tríceps Polea (Cuerda)','Extensión Barra / Fondos'],
+  pull:['Dorsalera Agarre Abierto','Dorsalera Agarre Cerrado','Remo en Máquina','Pullover / Serrucho','Curl Barra / Máquina','Curl Alternado','Curl Martillo'],
+  legs:['Extensiones Cuádriceps','Prensa de Piernas','Sentadilla Hack','Curl Femoral Acostado','Gemelos en Prensa','Crunch Estable','Elevación de Piernas']
+};
+const DAY_LABEL={push:'💪 Push',pull:'🔙 Pull',legs:'🦵 Legs'};
+const DAY_COLOR={push:'var(--accent)',pull:'var(--accent2)',legs:'var(--accent3)'};
+let currentFilter='all';
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='tracker'){renderHistory();}
+}
+function selectDay(id,el){
+  document.querySelectorAll('.ws-day').forEach(d=>d.classList.remove('sel'));
+  el.classList.add('sel');
+  document.querySelectorAll('.workout-block').forEach(b=>b.classList.remove('active'));
+  document.getElementById('wb-'+id).classList.add('active');
+}
+function toggleMeal(h){h.parentElement.classList.toggle('open');}
+
+// Set today's date
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('tr-date').value=new Date().toISOString().split('T')[0];
+});
+
+function getSessions(){return JSON.parse(localStorage.getItem('licha_v2')||'[]');}
+function saveSessions(s){localStorage.setItem('licha_v2',JSON.stringify(s.slice(0,60)));}
+
+function loadForm(){
+  const day=document.getElementById('tr-day').value;
+  const date=document.getElementById('tr-date').value;
+  const exercises=EX[day];
+  const sessions=getSessions();
+  const prev=sessions.filter(s=>s.day===day).sort((a,b)=>b.date.localeCompare(a.date))[0];
+
+  document.getElementById('tr-form').innerHTML=exercises.map((name,i)=>{
+    const p=prev?prev.ex[i]:{};
+    const sets=[1,2,3,4];
+    const prevStr=prev?sets.map(s=>p['k'+s]?`S${s}: ${p['k'+s]}×${p['r'+s]}`:'').filter(Boolean).join(' · '):'';
+    return `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:600;color:var(--white);margin-bottom:10px">${i+1}. ${name}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+        ${sets.map(s=>`
+          <div>
+            <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;text-align:center">S${s}</div>
+            <input type="number" placeholder="kg" id="k_${i}_${s}" value="${p['k'+s]||''}"
+              style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:7px 4px;border-radius:6px;font-size:12px;text-align:center;margin-bottom:3px;outline:none">
+            <input type="number" placeholder="rep" id="r_${i}_${s}" value="${p['r'+s]||''}"
+              style="width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--accent3);padding:7px 4px;border-radius:6px;font-size:12px;text-align:center;outline:none">
+          </div>`).join('')}
+      </div>
+      ${prevStr?`<div style="margin-top:8px;font-size:10px;color:var(--muted2)">⬆ Anterior (${prev.date}): ${prevStr}</div>`:''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('tr-save').style.display='block';
+  document.getElementById('tr-msg').style.display='none';
+}
+
+function saveSession(){
+  const day=document.getElementById('tr-day').value;
+  const date=document.getElementById('tr-date').value;
+  const exercises=EX[day];
+  const exData=exercises.map((_,i)=>{
+    const obj={};
+    [1,2,3,4].forEach(s=>{
+      const k=document.getElementById(`k_${i}_${s}`);
+      const r=document.getElementById(`r_${i}_${s}`);
+      if(k)obj['k'+s]=k.value;
+      if(r)obj['r'+s]=r.value;
+    });
+    return obj;
+  });
+  const sessions=getSessions();
+  sessions.unshift({day,date,ex:exData,names:exercises});
+  saveSessions(sessions);
+  document.getElementById('tr-msg').style.display='block';
+  setTimeout(()=>document.getElementById('tr-msg').style.display='none',3000);
+  renderHistory();
+}
+
+function deleteSession(i){
+  if(!confirm('¿Eliminar esta sesión?'))return;
+  const s=getSessions();s.splice(i,1);saveSessions(s);renderHistory();
+}
+
+function filterHistory(f){
+  currentFilter=f;
+  ['all','push','pull','legs'].forEach(k=>{
+    const btn=document.getElementById('f-'+k);
+    if(btn)btn.style.background=k===f?'var(--accent)':'var(--border2)';
+    if(btn)btn.style.color=k===f?'var(--bg)':'var(--text)';
+  });
+  renderHistory();
+}
+
+function renderHistory(){
+  const all=getSessions();
+  const sessions=currentFilter==='all'?all:all.filter(s=>s.day===currentFilter);
+  const list=document.getElementById('tr-history');
+  const empty=document.getElementById('tr-empty');
+  if(!sessions.length){empty.style.display='block';list.innerHTML='';return;}
+  empty.style.display='none';
+  list.innerHTML=sessions.map((s,si)=>{
+    const realIdx=all.indexOf(s);
+    const rows=s.names.map((name,i)=>{
+      const ex=s.ex[i]||{};
+      const sets=[1,2,3,4].map(n=>ex['k'+n]?`<span style="background:rgba(0,229,255,.08);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600">${ex['k'+n]}kg×${ex['r'+n]}</span>`:''
+      ).filter(Boolean).join(' ');
+      return sets?`<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:11px;color:var(--muted2);min-width:130px;flex-shrink:0">${name}</span>${sets}</div>`:'';
+    }).filter(Boolean).join('');
+    return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="background:${DAY_COLOR[s.day]};color:var(--bg);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;padding:3px 8px;border-radius:4px">${DAY_LABEL[s.day]}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--white)">${s.date}</span>
+        </div>
+        <button onclick="deleteSession(${realIdx})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px">🗑</button>
+      </div>
+      <div style="padding:10px 16px">${rows||'<span style="font-size:12px;color:var(--muted2)">Sin datos registrados</span>'}</div>
+    </div>`;
+  }).join('');
+}
+</script>
+
+<!-- ═══════════════════════════════
+     PAGE: WARRIORIA
+═══════════════════════════════ -->
+<div id="page-coach" class="page">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Tu coach de confianza</div>
+    <h1>WAR<br><em>RIORIA</em></h1>
+    <div class="hero-pills">
+      <div class="pill">WARRIORIA conoce <strong>tu plan completo</strong></div>
+      <div class="pill">Tus macros <strong>2350 kcal</strong></div>
+      <div class="pill">Split <strong>Push/Pull/Legs</strong></div>
+    </div>
+  </div>
+
+  <div class="section" style="border-bottom:none;padding-bottom:32px">
+    <div class="section-title">Preguntale lo que quieras a WARRIORIA</div>
+
+    <!-- Suggested questions -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="suggestions">
+      <button onclick="askSuggestion(this)" style="background:var(--card);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:100px;font-size:12px;cursor:pointer;transition:all .2s">¿Qué como si no tengo arroz?</button>
+      <button onclick="askSuggestion(this)" style="background:var(--card);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:100px;font-size:12px;cursor:pointer;transition:all .2s">Me duele el hombro, ¿qué hago hoy?</button>
+      <button onclick="askSuggestion(this)" style="background:var(--card);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:100px;font-size:12px;cursor:pointer;transition:all .2s">¿Puedo reemplazar el Press Smith?</button>
+      <button onclick="askSuggestion(this)" style="background:var(--card);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:100px;font-size:12px;cursor:pointer;transition:all .2s">¿Cómo sé si estoy progresando?</button>
+      <button onclick="askSuggestion(this)" style="background:var(--card);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:100px;font-size:12px;cursor:pointer;transition:all .2s">Comí mal hoy, ¿qué hago?</button>
+      <button onclick="askSuggestion(this)" style="background:var(--card);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:100px;font-size:12px;cursor:pointer;transition:all .2s">¿Cuánto descanso entre series?</button>
+    </div>
+
+    <!-- Chat messages -->
+    <div id="chat-messages" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;min-height:60px"></div>
+
+    <!-- Input -->
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <textarea id="coach-input" placeholder="Preguntale algo sobre tu plan, nutrición, ejercicios..." 
+        rows="2"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoach();}"
+        style="flex:1;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:12px 14px;border-radius:10px;font-family:inherit;font-size:13px;resize:none;outline:none;line-height:1.5;transition:border-color .2s"
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border2)'"
+      ></textarea>
+      <button onclick="sendCoach()" id="coach-send-btn"
+        style="background:var(--accent);color:var(--bg);border:none;width:44px;height:44px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s">
+        ↑
+      </button>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--muted);text-align:center">WARRIORIA conoce tu plan, tus macros, tus ejercicios y todas tus reglas</div>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `Sos WARRIORIA, el coach de IA personal de Licha (Ayrton). Tu nombre es WARRIORIA — si te preguntan cómo te llamás, respondés con ese nombre. Conocés su plan completo al detalle y respondés de forma directa, concreta y motivadora — como un buen entrenador, no como un chatbot genérico. Usás lenguaje argentino informal (vos, tenés, comés, etc). Sos específico con su plan, no das respuestas genéricas.
+
+PLAN DE ENTRENAMIENTO DE LICHA:
+Split Push / Pull / Legs con pirámide de carga 15/12/10/8.
+
+PUSH (Pecho/Hombro/Tríceps):
+1. Press Inclinado Smith — 4x15/12/10/8 — banco 30°, pirámide
+2. Press Plano Smith — 4x15/12/10/8 — pirámide, no bloquear codos
+3. Aperturas Polea/Pec Deck — 3x12-15 — pausa 1s al cerrar
+4. Press Hombro Mancuernas — 3x12/10/10 — espalda apoyada
+5. Elevaciones Laterales — 4x12-15 — hacia afuera, no arriba
+6. Tríceps Polea Cuerda — 3x10-12 — codos pegados, abrir cuerda
+7. Extensión Barra/Fondos — 4x12 — codos cerrados siempre
+
+PULL (Espalda/Bíceps):
+1. Dorsalera Agarre Abierto — 4x15/12/10/8 — tracciona con codos
+2. Dorsalera Agarre Cerrado — 4x10 — agarre neutro, pecho bajo
+3. Remo en Máquina — 4x10 — juntar escápulas
+4. Pullover Barra/Serrucho — 4x15
+5. Curl Barra/Máquina — 3x10 — sin balanceos, bajar lento 2s
+6. Curl Alternado — 3x10-12 — girar muñeca al subir
+7. Curl Martillo — 2x10
+
+LEGS (Pierna Completa + Abs):
+1. Extensiones Cuádriceps — 4x15 — PRE-FATIGA
+2. Prensa de Piernas — 4x15/12/10/8 — no bloquear rodillas
+3. Sentadilla Hack — 4x12 — máxima profundidad
+4. Curl Femoral Acostado — 4x12 — no despegar cadera
+5. Gemelos en Prensa — 4x15-20 (opcional)
+ABS: Crunch Estable 4x12-15 + Elevación de Piernas 3x12
+
+NUTRICIÓN DE LICHA:
+- Total: ~2350 kcal/día
+- Proteína: ~160g | Carbos: ~220g | Grasas: ~80g
+- 4 comidas: Desayuno (~580kcal) + Almuerzo (~700kcal) + Merienda (~420kcal) + Cena (~530kcal)
+
+DESAYUNO — elegir UNA opción:
+• Opción 1: Yogur Ser Protein + 1 fruta + 2 tostadas + 25g pasta maní/frutos secos (~550kcal)
+• Opción 2: 2 tostadas + 3 huevos + queso por salut + fruta (~540kcal)
+• Opción 3: Scoop proteína + Yogur Ser + fruta + 20g pasta maní (~480kcal)
+• Opción 4: Ser Protein + ½-1 scoop + pasta maní/frutos secos + fruta + quinoa pop opcional (~455kcal)
+
+ALMUERZO — elegir UNA opción:
+• Opción 1: 250g carne magra/pollo/atún + 200g arroz/papa/batata/6 galletas arroz/80g fideos + verdura + aceite/palta
+• Opción 2: Omelette 2 huevos + 30g queso por salut + hidrato (elegir uno)
+• Opción 3: 1 lata atún + papa + huevo o cucharada aceite
+
+MERIENDA — elegir UNA opción:
+• Opción 1: Scoop proteína + fruta + 20g frutos secos nuez/almendra
+• Opción 2: Barrita proteína Integra + fruta
+• Opción 3: Ser Protein + ½-1 scoop + pasta maní 20g/frutos secos + fruta (+ quinoa pop opcional)
+
+CENA — elegir UNA opción:
+• Opción 1 (principal): 200g carne magra/pollo/atún + papa/batata mediana 200g + calabaza + verdura libre
+• Opción 2 (5 min): Omelette 3 huevos + queso por salut light + 2 rebanadas pan
+• Opción 3 (5 min): Lata atún + huevo + 2 rebanadas pan
+
+REGLAS ESPECIALES:
+- LUNES: sacar fruta de merienda + sacar papa de cena (bajar ~170kcal)
+- SÁBADO: una comida libre, con criterio
+- DOMINGO: pastas + proteína magra antes y después
+- Un hidrato por comida (arroz ó papa ó batata ó fideos ó galletas — no se combinan)
+- Post-entreno: ideal 1 scoop + banana dentro de los 60 min; si no puede: barrita proteína
+- Agua: 2-2.5L mínimo, botella de 1L al gym
+- Antojo: helado proteico / yogur Ser + scoop + quinoa pop / gelatina / frutos rojos / 2 sobres edulcorante
+
+SUPLEMENTOS: Multivitamínico + Vit D3 + Omega 3 + Creatina 5g (todos con desayuno)
+
+PRINCIPIOS CLAVE:
+- Pirámide: S1=15 reps peso moderado → S2=12 → S3=10 → S4=8 reps peso máximo
+- Excéntrico siempre 2-3 segundos controlado
+- Descanso: compuestos 2-3min, aislamientos 60-90seg
+- Deload cada 6-8 semanas (1 semana al 60% del volumen)
+- Progresión: cuando llegás a 8 reps en la última serie con técnica y energía → subís peso la próxima sesión
+
+Cuando respondas:
+- Sé directo y específico con SU plan, no genérico
+- Si te pregunta por reemplazos de comida, respetá los macros aproximados
+- Si te pregunta por lesiones o dolores, sugerí modificaciones conservadoras y recomendá consultar un médico si es necesario
+- Máximo 150 palabras por respuesta a menos que la pregunta requiera más detalle
+- Podés usar emojis con moderación`;
+
+let chatHistory = [];
+
+function askSuggestion(btn) {
+  document.getElementById('coach-input').value = btn.textContent;
+  sendCoach();
+}
+
+async function sendCoach() {
+  const input = document.getElementById('coach-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  const sendBtn = document.getElementById('coach-send-btn');
+  sendBtn.disabled = true;
+  sendBtn.style.opacity = '0.5';
+
+  // Add user message
+  chatHistory.push({ role: 'user', content: msg });
+  renderChat();
+
+  // Add typing indicator
+  const typingId = 'typing-' + Date.now();
+  const messages = document.getElementById('chat-messages');
+  messages.innerHTML += `<div id="${typingId}" style="display:flex;gap:10px;align-items:flex-start">
+    <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⚔️</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px 12px 12px 2px;padding:12px 14px;font-size:13px;color:var(--muted2)">
+      <span style="display:inline-flex;gap:4px">
+        <span style="animation:blink 1.2s infinite">●</span>
+        <span style="animation:blink 1.2s infinite .2s">●</span>
+        <span style="animation:blink 1.2s infinite .4s">●</span>
+      </span>
+    </div>
+  </div>`;
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory })
+    });
+
+    const data = await response.json();
+    const reply = data.reply || data.error || 'No pude procesar la respuesta.';
+
+    // Remove typing indicator
+    document.getElementById(typingId)?.remove();
+
+    chatHistory.push({ role: 'assistant', content: reply });
+    renderChat();
+
+  } catch (err) {
+    document.getElementById(typingId)?.remove();
+    chatHistory.push({ role: 'assistant', content: '❌ Error de conexión. Revisá tu internet e intentá de nuevo.' });
+    renderChat();
+  }
+
+  sendBtn.disabled = false;
+  sendBtn.style.opacity = '1';
+}
+
+function renderChat() {
+  const messages = document.getElementById('chat-messages');
+  messages.innerHTML = chatHistory.map(m => {
+    const isUser = m.role === 'user';
+    return isUser
+      ? `<div style="display:flex;justify-content:flex-end">
+           <div style="background:var(--accent);color:var(--bg);border-radius:12px 12px 2px 12px;padding:10px 14px;font-size:13px;max-width:85%;font-weight:500;line-height:1.5">${m.content}</div>
+         </div>`
+      : `<div style="display:flex;gap:10px;align-items:flex-start">
+           <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⚔️</div>
+           <div style="background:var(--card);border:1px solid var(--border);border-radius:12px 12px 12px 2px;padding:12px 14px;font-size:13px;color:var(--text);max-width:85%;line-height:1.6;white-space:pre-wrap">${m.content}</div>
+         </div>`;
+  }).join('');
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// Blink animation for typing indicator
+const styleEl = document.createElement('style');
+styleEl.textContent = `@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}`;
+document.head.appendChild(styleEl);
+</script>
+</body>
+</html>
